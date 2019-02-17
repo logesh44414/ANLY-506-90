@@ -1,0 +1,22 @@
+df <- USArrests
+df <- na.omit(df)
+df <- scale(df)
+head(df)
+
+**# Dissimilarity matrix**
+d <- dist(df, method = "euclidean")
+
+**# Hierarchical clustering using Complete Linkage**
+hc1 <- hclust(d, method = "ward.D" )
+
+clusterplot(k='10')
+
+**# Ward's method**
+hc5 <- hclust(d, method = "ward.D2" )
+
+**## Cut tree into 4 groups**
+sub_grp <- cutree(hc5, k = 10)
+table(sub_grp)
+
+*# final line of code*
+hc2 <- agnes(df, method = "single")
