@@ -1,0 +1,10 @@
+Title: Gapminder
+
+Data description:
+
+1. Country - Name of the country
+2. Year - Year data was recorded
+3. Life expectancy - Average period a person may expect to live
+4. Population - Number of inhabitants recorded once every 10 years in a country
+5. Income - Monetary value (in dollars) of all goods and services produced by a country in a particular time period divided by the average population for that time period
+6. Region - Region the country is located in
