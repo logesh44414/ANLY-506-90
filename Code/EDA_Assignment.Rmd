@@ -1,0 +1,190 @@
+---
+title: "Gapminder_Income_EDA"
+author: "Logeshwar Venkatesan"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    fig_caption: true
+    theme: flatly
+---
+      
+# Target of this analysis
+    
+In this analysis, we will look at the variable income and understand how it affects three other important variables viz., population, life expectancy and geography.
+  
+## Data exploration
+  
+Load csv and read in data
+  
+```{r,echo=TRUE,warning=TRUE}  
+    library(readr)  
+    gapminder<-read_csv('gapminder.csv', col_types = 'cnnnnc')
+```
+  
+## Check packaging
+
+Check number of rows and columns in data set
+  
+```{r,echo=TRUE,warning=TRUE}
+    nrow(gapminder)
+    ncol(gapminder)
+```
+  
+## Run str()
+  
+Analyze the internal structure of the R object
+  
+```{r,echo=TRUE,warning=TRUE}
+    str(gapminder)
+```  
+Look at the top and bottom of the data to check formatting errors
+  
+```{r,echo=TRUE,warning=TRUE}
+    head(gapminder)
+    tail(gapminder)
+```
+## Check missing data
+  
+### Count of missing values
+
+```{r,echo=TRUE,warning=TRUE}
+    sapply(gapminder, function(x) sum(is.na (x)))
+```
+##  Data aggregation
+```{r,echo=TRUE,warning=TRUE}
+    library(dplyr)
+    gapminder %>%
+    group_by(Country) %>%
+    summarise(life = median(life))
+```
+  
+## Plotting
+
+### Total Dataset
+
+In this section, we will plot a graph to understand the overall dataset and in the later sections, we will look at the questions we formulated.
+  
+```{r,echo=TRUE,warning=TRUE}
+    library(dplyr)
+    table(gapminder$income) %>% barplot(col = "wheat")
+    table(gapminder$population) %>% barplot(col = "wheat")
+    table(gapminder$life) %>% barplot(col = "wheat")
+```
+
+### Finite Dataset
+  
+**The analysis conducted is only after the year 2000 and hence we'll filter the data accordingly**
+  
+Filter data from main dataset to include data for only after year 2000
+  
+```{r,echo=TRUE,warning=TRUE}
+    library(tidyverse)
+    library(ggplot2)
+    library(dplyr)
+    gapminder2000<-filter(gapminder, Year >= 2000)
+``` 
+1. How does income relate to life expectancy?
+
+```{r,echo=TRUE,warning=TRUE}
+    p1d<-aggregate(income ~ life, gapminder2000, median)
+    library(ggplot2)
+    p1<-qplot(life, income, data = p1d)
+    p1
+```
+  
+2. What is the population trend for United States vs India?
+  
+Filter and aggregate data for USA and India
+  
+```{r,echo=TRUE,warning=TRUE}
+    gapminder2000AI <- filter(gapminder2000, Country == 'United States' | Country == 'India')
+  
+    p2d<-aggregate(Country ~ population, gapminder2000AI, median)
+```
+
+**Scatter plot of Population by Country**
+```{r,echo=TRUE,warning=TRUE}
+    library(ggplot2)
+    p2<-qplot(Country, population, data = p2d)
+    p2
+```
+
+**Box plot of Population by Country**
+```{r,echo=TRUE,warning=TRUE}
+    library(ggplot2)
+    ggplot(p2d, aes(x = Country, y = population)) +
+    geom_boxplot(outlier.colour = "hotpink") +
+    geom_jitter(position = position_jitter(width = 0.1, height = 0), alpha = 1/4)
+```
+
+3. Top 10 and bottom 10 countries by income
+
+Aggregate data
+
+```{r,echo=TRUE,warning=TRUE}
+    p3d<-aggregate(income ~ Country, gapminder2000, median)
+```
+
+**Top 10 countries by income**
+  
+```{r,echo=TRUE,warning=TRUE}
+      top10a<-filter(p3d, row_number(desc(income)) <= 10)
+    	top10<-arrange(top10a,income)
+    	top10
+```
+
+**Bottom 10 countries by income**
+
+```{r,echo=TRUE,warning=TRUE}
+    bot10a<-filter(p3d, row_number(desc(-income)) <= 10)
+    bot10<-arrange(bot10a,income)
+    bot10
+```
+
+**Box plot of Top 10 highest income countries**
+
+```{r,echo=TRUE,warning=TRUE}
+    library(ggplot2)
+    ggplot(aes(x = top10$Country, y = top10$income), data = top10) +
+    geom_jitter(color = 'orange', alpha = 0.5, size = 0.5) +
+    geom_boxplot(outlier.color='red', alpha = 0.5) +
+    stat_summary(fun.y = "mean", geom = "point", color = "blue", shape     = 8, size = 4) +
+    coord_cartesian() +
+    ggtitle("Top 10 lowest income countries")
+```
+
+**Box plot of Top 10 highest income countries**
+
+```{r,echo=TRUE,warning=TRUE}
+   library(ggplot2)
+    ggplot(aes(x = bot10$Country, y = bot10$income), data = bot10) +
+    geom_jitter(color = 'orange', alpha = 0.5, size = 0.5) +
+    geom_boxplot(outlier.color='red', alpha = 0.5) +
+    stat_summary(fun.y = "mean", geom = "point", color = "red", shape     = 8, size = 4) +
+    coord_cartesian() +
+    ggtitle("Top 10 lowest income countries")
+```
+
+## Results and conclusion
+  
+#### Question 1: How does income relate to life expectancy?
+  *There are more people in the 55 to 65 age range and the income falls below 3000.
+  This correlates with the fact that the average life expectancy has been increasing over time so people live longer.
+  There is a significant number of data pointsin the upper spectrum indicating richer people live longer as they can afford better medical facilities*
+  
+##### Question 1.1: How does income relate to life expectancy by region?
+  *Countries from Sub Saharan Africa form the low end of the spectrum.
+  Countries from Europe and America form the high end of the spectrum*
+  
+#### Question 2: What is the population trend for United States vs India?
+  *The population is India has been high since the 1800s and has increased at a rapid pace.
+  The population in United States is in the lower end and it's uptrend has been very slow and has a low people per square kilometer metric.*
+  
+#### Question 3: Top 10 and bottom 10 countries by income
+  *Most countries in the top 10 countries with the highest GDP are from Europe.
+  Oil rich countries like Qatar and Kuwait make it to the top 10 along with the Unites States
+  Singapore is the only country from East Asia.
+  All the countries in the bottom 10 are from Sub Saharan Africa.*
+  
+  

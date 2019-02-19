@@ -1,7 +1,11 @@
-Title: Gapminder
+Title: Gapminder_income_EDA
 
-Questions to be explored:
-1. How does income relate to life expectancy?
-2. How does population relate to income?
-3. How has life expectancy changed over time?
-4. Does overpopulation affect per capita GDP?
+
+Question 1: How does income relate to life expectancy?
+
+Question 1.1: How does income relate to life expectancy by region?
+
+Question 2: What is the population trend for United States vs India?
+
+Question 3: Top 10 and bottom 10 countries by income
+

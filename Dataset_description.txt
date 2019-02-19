@@ -1,4 +1,4 @@
-Title: Gapminder
+Title: Gapminder_income_EDA
 
 Data description:
 

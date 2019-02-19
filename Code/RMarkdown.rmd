@@ -1,22 +1,40 @@
+---
+title: "RMarkdown"
+author: "Logeshwar Venkatesan"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    fig_caption: true
+    theme: flatly
+---
+
+## Load Dataset
+```{r,echo=TRUE,warning=TRUE}  
+library(datasets)
 df <- USArrests
 df <- na.omit(df)
 df <- scale(df)
 head(df)
+```
 
-**# Dissimilarity matrix**
+## Dissimilarity matrix
+```{r,echo=TRUE,warning=TRUE}  
 d <- dist(df, method = "euclidean")
-
-**# Hierarchical clustering using Complete Linkage**
+d
+```
+## Hierarchical clustering using Complete Linkage
+```{r,echo=TRUE,warning=TRUE}  
 hc1 <- hclust(d, method = "ward.D" )
-
-clusterplot(k='10')
-
-**# Ward's method**
+hc1
+```
+## Ward's method
+```{r,echo=TRUE,warning=TRUE}  
 hc5 <- hclust(d, method = "ward.D2" )
-
-**## Cut tree into 4 groups**
+hc5
+```
+## Cut tree into 4 groups
+```{r,echo=TRUE,warning=TRUE}  
 sub_grp <- cutree(hc5, k = 10)
 table(sub_grp)
-
-*# final line of code*
-hc2 <- agnes(df, method = "single")
+```
